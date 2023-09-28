@@ -2,6 +2,7 @@ import sys
 import re
 from colorsys import hls_to_rgb, rgb_to_hls
 import random
+import io
 
 def calc_percent_along_loop(percent, start, end, loop):
     dist = abs(end-start)
@@ -174,37 +175,98 @@ def calc_size(lines):
         if len(line) > max_len:
             max_len = len(line)
     return (len(lines), max_len)
-
-def import_rules(rulefile):
-    rules = {}
-    with open(rulefile) as f:
-        rules["type"] = f.readline().rstrip('\n')
-        for line in f:
-            line = line.rstrip('\n')
-            char,output = line.split('->')
-            rules[char] = Rule(output)
-    return rules
     
-def import_layer(layerfile):
+class FileHandler:
+    def __init__(self, *args, **kwargs):
+        self.prev_lines = []
+        self._file = open(*args, **kwargs)
+    
+    def put_back(self,line):
+        self.prev_lines.append(line)
+    
+    def __iter__(self):
+        return self
+        
+    def __next__(self, *args, **kwargs):
+        if len(self.prev_lines) > 0:
+            return self.prev_lines.pop()
+        return self._file.__next__(*args, **kwargs)
+        
+    def readline(self, *args, **kwargs):
+        if len(self.prev_lines) > 0:
+            return self.prev_lines.pop()
+        return self._file.readline(*args, **kwargs)
+        
+    def at_end(self):
+        line = self.readline()
+        if line == '':
+            return True
+        self.put_back(line)
+        return False
+        
+    def readlines(self, *args, **kwargs):
+        prev_lines = list(reversed(self.prev_lines))
+        self.prev_lines = []
+        return prev_lines+self._file.readlines(*args, **kwargs)
+        
+    def close(self):
+        self._file.close()
+    
+def get_drawing(f):
     lines = []
-    with open(layerfile) as f:
-        for line in f:
-            lines.append(line.rstrip('\n'))
+    for line in f:
+        if line[0] != '`':
+            f.put_back(line)
+            if len(lines) == 0:
+                return None
+            return lines
+        lines.append(line[1:].rstrip('\n'))
+    if len(lines) == 0:
+        return None
     return lines
+        
+def get_rules(f, type_):
+    rules = {"type":type_}
+    for line in f:
+        line = line.rstrip('\n')
+        if line in sublayer_types:
+            f.put_back(line)
+            if len(rules) == 1:
+                return None
+            return rules
+        char,output = line.split('->')
+        rules[char] = Rule(output)
+    if len(rules) == 1:
+        return None
+    return rules
 
+sublayer_types = ["background", "foreground", "chars"]
+def read_layerfile(layerfile):
+    sublayers = {typ: None for typ in sublayer_types}
+    size = None
+    f = FileHandler(layerfile)
+    while not f.at_end():
+        current_layer_type = f.readline().rstrip('\n')
+        if size == None:
+            uncalc_drawing = get_drawing(f)
+            size = calc_size(uncalc_drawing)
+            drawing = squarify(uncalc_drawing, size[1])
+        else:
+            drawing = squarify(get_drawing(f), size[1])
+        rules = get_rules(f, current_layer_type)
+        sublayers[current_layer_type] = (drawing, rules)
+    f.close()
+    return (sublayers,size)
+
+
+end = {"background":None, "foreground":None, "chars":'\x1b[0m'}
 if __name__ == "__main__":
-    final_layer = sys.argv[-1]
-    args = sys.argv[1:-1]
-    final_layer = import_layer(final_layer)
-    size = calc_size(final_layer)
-    final_layer = squarify(final_layer, size[1])
-    
+    args = sys.argv[1:]
+    layer, size = read_layerfile(args[0])
     output = create_output(size[0], size[1])
-    for layerfile, rulesfile in zip(args[::2], args[1::2]):
-        layer = squarify(import_layer(layerfile), size[1])
-        rules = import_rules(rulesfile)
-        replace(rules, layer, output, None)
-    replace(None, final_layer, output, '\x1b[0m')
+    
+    for sublayer in sublayer_types:
+        replace(layer[sublayer][1], layer[sublayer][0], output, end[sublayer])
     with open("output.csl", 'w') as f:
         output_lines = [''.join(l) for l in output]
         f.write('\n'.join(output_lines))
