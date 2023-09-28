@@ -1,0 +1,2 @@
+python merge_fix.py layer3.txt background_layer.merge layer2.txt text_layer.merge layer1.txt
+cat output.csl
