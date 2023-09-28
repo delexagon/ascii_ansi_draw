@@ -2,8 +2,21 @@ import sys
 import re
 from colorsys import hls_to_rgb, rgb_to_hls
 import random
+
+def calc_percent_along_loop(percent, start, end, loop):
+    dist = abs(end-start)
+    if loop != None:
+        alt_dist = loop-dist
+        if alt_dist < dist:
+            return ((percent*alt_dist)+start)%loop
+    return percent*dist+start
+
+def col_on_gradient(percent, min_col, max_col, loop_col):
+    return tuple([calc_percent_along_loop(percent,min,max,loop) for min, max, loop in zip(min_col, max_col, loop_col)])
     
-def bound(lower, higher, i):
+def bound(lower, higher, i, loop):
+    if loop and (i < lower or i > higher):
+        return ((i-lower)%(higher-lower))+lower
     if i < lower:
         return lower
     elif i > higher:
@@ -12,6 +25,9 @@ def bound(lower, higher, i):
 
 def simplify_spaces(line):
     return re.sub(r'[ \t]+', ' ', line.strip())
+
+def read_tuple(str_):
+    return tuple(map(lambda x: int(x), str_.split(',')))
 
 class Rule:
     def __init__(self, str_):
@@ -22,28 +38,75 @@ class Rule:
             self.typ = "hex"
             self.tup = portions[0]
         else:
-            self.tup = tuple(map(lambda x: int(x), portions[0].split(',')))
+            self.tup = read_tuple(portions[0])
         for portion in portions[1:]:
-            rule, thing = portion.split(' ')
+            rule, thing = portion.split(' ', 1)
             if rule == "vary":
-                self.variance = tuple(map(lambda x: int(x), thing.split(',')))
+                # vary h,s,l
+                self.variance = read_tuple(thing)
+            elif rule == "type":
+                self.typ = thing
+            elif rule == "gradient":
+                # gradient row 0 0,0,0 50 100,50,50 100 360,100,100
+                self.gradient = {}
+                grad_typ, grads = thing.strip().split(' ', 1)
+                grads = grads.split(' ')
+                gradients = sorted([(int(percent)/100, read_tuple(thing)) for (percent, thing) in zip(grads[::2], grads[1::2])])
+                self.gradient[grad_typ] = gradients
     
-    def vary(self, i):
-        return self.tup[i]+random.randint(-self.variance[i],self.variance[i])
+    def vary(self, col):
+        return tuple([x+random.randint(-v,v) for x,v in zip(col, self.variance)])
+        
+    def get_our_grad(self, grad_typ, x, max_x):
+        x = x/max_x
+        prev_x = 2
+        prev_col = self.gradient[grad_typ][0][1]
+        for next_x, next_col in self.gradient[grad_typ]:
+            if next_x > x:
+                if x == next_x:
+                    p = 1
+                else:
+                    p = (x-prev_x)/(next_x-prev_x)
+                return (p,prev_col,next_col)
+            prev_x = next_x
+            prev_col = next_col
+        return (1,prev_col,next_col)
+        
+    def gen_grad(self, row, col, max_row, max_col):
+        if "row" in self.gradient:
+            percent, begin_grad, end_grad = self.get_our_grad("row", row, max_row)
+            return col_on_gradient(percent, begin_grad, end_grad, Color.loop(self.typ))
+        elif "col" in self.gradient:
+            percent, begin_grad, end_grad = self.get_our_grad("col", col, max_col)
+            return col_on_gradient(percent, begin_grad, end_grad, Color.loop(self.typ))
     
-    def color_tup(self):
+    def color_tup(self, row,col,max_row,max_col):
+        if hasattr(self, "gradient"):
+            start_color = self.gen_grad(row,col,max_row,max_col)
+        else:
+            start_color = self.tup
         if hasattr(self, "variance"):
-            return (self.vary(0),self.vary(1),self.vary(2))
+            return self.vary(start_color)
         else:
             return self.tup
     
-    def color(self):
-        return Color(self.typ, self.color_tup())
+    def color(self,row,col,max_row,max_col):
+        return Color(self.typ, self.color_tup(row,col,max_row,max_col))
 
 # stored internally as rgb (0-1) 
 class Color:
     def __init__(self, typ, tup):
         self.__setitem__(typ,tup)
+        
+    def bound(typ):
+        if typ == 'hsl':
+            return ((360,100,100),(True,False,False))
+        if typ == 'rgb':
+            return ((255,255,255),(False,False,False))
+    
+    def loop(typ):
+        bound1 = Color.bound(typ)
+        return tuple([bound if loops else None for bound, loops in zip(bound1[0], bound1[1])])
 
     def __getitem__(self, typ):
         if typ == "hsl":
@@ -56,11 +119,12 @@ class Color:
             return tuple(map(lambda x: round(x*255), self.rgb))
     
     def __setitem__(self, typ, tup):
-        if typ == "hsl":
+        if typ == "hsl" or typ == 'rgb':
             h,s,l=tup
-            h=bound(0,360,h)
-            s=bound(0,100,s)
-            l=bound(0,100,l)
+            (hb,sb,lb),(hl,sl,ll) = Color.bound('hsl')
+            h=bound(0,hb,h,hl)
+            s=bound(0,sb,s,sl)
+            l=bound(0,lb,l,ll)
             self.rgb = hls_to_rgb(h/360,l/100,s/100)
         elif typ == "hex":
             self.rgb = tuple(int(tup.lstrip("#")[i:i+2], 16)/255 for i in (0, 2, 4))
@@ -95,7 +159,7 @@ def replace(rules, input_lines, output_lines, end):
                 output_lines[i][j] += input_lines[i][j]+end
             else:
                 if input_lines[i][j] in rules:
-                    output_lines[i][j] += create_str(rules["type"],rules[input_lines[i][j]].color())
+                    output_lines[i][j] += create_str(rules["type"],rules[input_lines[i][j]].color(i,j,len(input_lines),len(input_lines[i])))
     return output_lines
 
 def create_output(lines, chars):
