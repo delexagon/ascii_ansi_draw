@@ -123,6 +123,8 @@ class ColorGen:
         return tuple(bounded)
         
     def rgb_to_ansi_str(rgb, type):
+        if rgb == None:
+            return ''
         r,g,b = rgb
         if type == 'background':
             return f"\x1b[48;2;{r};{g};{b}m"

@@ -14,7 +14,7 @@ chars
 `    / ^^  ^ ^ ^\  /______________________________\ ^ ^ \ /|o|||\
 `   /  ^  ^^ ^ ^  /________________________________\  ^  /|||||o|\
 `  /^ ^  ^ ^^  ^    ||___|___|||||--|||||___|__|||      /||o||||||\
-` / ^   ^   ^    ^  ||___|___||||| .|||||___|__|||          | |
+` / ^   ^   ^    ^  ||___|___||||| .|||||_t_|__|||          | |
 `/ ^ ^ ^  ^  ^  ^   ||||||||||||||__||||||||||||||oooooooooo| |ooooooo
 `ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
 foreground
@@ -33,7 +33,7 @@ foreground
 `    = ==  = = ==  -------------------------------- = = = ggPgggg
 `   =  =  == = =  ----------------------------------  =  ggggggbgg
 `  == =  = ==  =    --===-===-----##-----===-==---      gggrggggggg
-` = =   =   =    =  --===-===----- #-----===-==---          - -
+` = =   =   =    =  --===-===----- #-----=G=-==---          - -
 `= = = =  =  =  =   --------------##--------------GpGgRGrggG- -GGbggiG
 `GGgGgGGggGGGGggGGggGGgGgGGGgGGGg---gGGGgggGGgGGgGgGGGggGgGGggGGGgggGG
 G->110,100,10 ; vary 30,10,10
@@ -72,7 +72,7 @@ background
 `....==OOOGGGOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO==.GGGGGGG.....
 `...OGGGGGGGGGGGGGOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOGGGGGGGGGGGGGG....
 `..GGGGGGGGGGGGGGGGGOOyyyOyyyOOOOOOOOOOOOyyyOyyOOOGGGGGGGGGGGGGGGGG...
-`.GGGGGGGGGGGGGGGGGGOOyyyOyyyOOOOOOOOOOOOygyOyyOOOGGGGGGGGG.OOO.......
+`.GGGGGGGGGGGGGGGGGGOOyyyOyyyOOOOOOOOOOOOyyyOyyOOOGGGGGGGGG.OOO.......
 `GGGGGGGGGGGGGGGGGGGOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOGGGGGGGGGGOOOGGGGGGG
 `GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
 G->110,100,10 ; vary 10,3,3

@@ -1,0 +1,74 @@
+chars
+`              .
+`            \ | /
+`          '-.;;;.-'
+`         -==;;;;;==-
+`          .-';;;'-.
+`            / | \
+`              '
+`                                    ||
+`               |                    |
+`         ||   ||    ||           | ||   |
+`          ||  || |||             |||||||
+`           |||||||                |||||
+`            |||||  ||||||          |||           ||  |     |   ||
+`             ||||||||||           ||||    |||     | ||     || ||
+`====          |||||||            |||||||    |||| ||||       |||
+`=.==========  |||||        ==.==|||====|||==.=|||||==  ||  |||   |
+` ====== ==o==||||||=====o==.===|||==.==o=|=====|||==.== ||||||| ||
+`=o.==\.=.=.=|||||||||===.==---- ---      -|||| |||   =o=.===|||| =
+` ==.=.==.==||||||||||||==/=--------------- --|||||||||-----=|||==//
+`    =.=.==|||.=|||=o==||=0=.=     -------------||||----   .|||||==.
+`         |||====||==.==||=.=          _        |||      ==||||==||=
+`          |      ||======/===                  |||  =====0====/=.=0
+`                     0  =====\==              |||||====\===\===o=/=
+`                          =.==\=====.=/==0==|||||||||==.=0\===./==
+`                           =/==0==\========||||  |||||| ===
+`                                           |         ||
+foreground
+`              y
+`            y y y
+`          yyyyyyyyy
+`         yyyyyyyyyyy
+`          yyyyyyyyy
+`            y y y
+`              y
+`                                    OO
+`               O                    O
+`         OO   OO    OO           O OO   O
+`          OO  OO OOO             OOOOOOO
+`           OOOOOOO                OOOOO
+`            OOOOO  OOOOOO          OOO           OO  O     O   OO
+`             OOOOOOOOOO           OOOO    OOO     O OO     OO OO
+`wwww          OOOOOOO            OOOOOOO    OOOO OOOO       OOO
+`w-wwwwwwwwww  OOOOO        ww-wwOOOwwwwOOOww-wOOOOOww  OO  OOO   O
+` wwwwww ww=wwOOOOOOwwwww=ww-wwwOOOww-ww=wOwwwwwOOOww-ww OOOOOOO OO
+`w=-wwG-w-w-wOOOOOOOOOwww-wwcccc ccc      cOOOO OOO   w=w-wwwOOOO w
+` ww-w-ww-wwOOOOOOOOOOOOwwGwccccccccccccccc ccOOOOOOOOOcccccwOOOwwGG
+`    w-w-wwOOO-wOOOw=wwOOw=w-w     cccccccccccccOOOOcccc   -OOOOOww-
+`         OOOwwwwOOww-wwOOw-w          _        OOO      wwOOOOwwOOw
+`          O      OOwwwwwwGwww                  OOO  wwwww=wwwwGw-w=
+`                     =  wwwwwGww              OOOOOwwwwGwwwGwww=wGw
+`                          w-wwGwwwww-wGww=wwOOOOOOOOOww-w=Gwww-Gww
+`                           wGww=wwGwwwwwwwwOOOO  OOOOOO www
+`                                           O         OO
+G->110,100,10 ; vary 30,10,10
+g->110,63,51 ; vary 30,10,10
+B->241,100,18 ; vary 30,10,10
+b->241,76,54 ; vary 30,10,10
+C->190,92,14 ; vary 30,10,10
+c->190,75,52 ; vary 30,10,10
+Y->68,96,8 ; vary 30,10,10
+y->40,90,44 ; vary 30,10,10
+P->268,96,15 ; vary 30,10,10
+p->268,96,45 ; vary 30,10,10
+W->0,0,63 ; vary 30,10,10
+w->0,0,100 ; vary 30,10,10
+O->26,42,11 ; vary 30,10,10
+o->26,100,50 ; vary 30,10,10
+=->0,1,11 ; vary 30,10,10
+r->0,100,50 ; vary 30,10,10
+R->0,98,8 ; vary 30,10,10
+i->310,100,50 ; vary 30,10,10
+-->28,54,32 ; vary 30,10,10
+#->0,0,0 ; vary 30,10,10
